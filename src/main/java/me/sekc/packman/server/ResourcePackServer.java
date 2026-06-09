@@ -29,7 +29,13 @@ public class ResourcePackServer {
 
 	public void startServer() {
 		plugin.getLogger().info("Starting HTTP server to serve the resourcepack on port " + server.getAddress().getPort() + ".");
+		plugin.getLogger().info("You can test this by visiting http://" + plugin.getConfig().getString("resource-pack-server.server-ip") + ":" + plugin.getConfig().getInt("resource-pack-server.port") + " on your web browser.");
 		server.start();
+	}
+
+	public void stopServer() {
+		plugin.getLogger().info("Stopping HTTP server.");
+		server.stop(0);
 	}
 
 	static class Handler implements HttpHandler {
@@ -40,7 +46,7 @@ public class ResourcePackServer {
 			byte[] bytes = Files.readAllBytes(new File(plugin.getDataPath() + "/pack.zip").toPath());
 
 			if (bytes.length == 0) {
-				throw new RemoteException("pack.zip is missing! Cannot serve to client");
+				throw new RuntimeException("pack.zip is missing! Cannot serve to client");
 			}
 
 			t.getResponseHeaders().put("Content-Disposition", Collections.singletonList("attachment; filename=\"pack.zip\""));

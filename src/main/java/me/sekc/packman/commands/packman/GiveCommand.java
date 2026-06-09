@@ -7,6 +7,9 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import me.sekc.packman.Packman;
 import me.sekc.packman.commands.BaseCommand;
+import me.sekc.packman.commands.suggestions.ItemNameSuggestionProvider;
+import me.sekc.packman.commands.suggestions.PackNameSuggestionProvider;
+import me.sekc.packman.commands.suggestions.PlayerSuggestionProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,8 +18,11 @@ public class GiveCommand extends BaseCommand {
     static public void register(Packman plugin, LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("give")
 			.then(Commands.argument("player", StringArgumentType.word())
+				.suggests(new PlayerSuggestionProvider())
 				.then(Commands.argument("pack_name", StringArgumentType.word())
+					.suggests(new PackNameSuggestionProvider(plugin))
 					.then(Commands.argument("item_name", StringArgumentType.word())
+						.suggests(new ItemNameSuggestionProvider(plugin))
 						.executes(ctx -> {
 							String player_name = ctx.getArgument("player", String.class);
 							String pack_name = ctx.getArgument("pack_name", String.class);
@@ -27,7 +33,7 @@ public class GiveCommand extends BaseCommand {
 								throw new RuntimeException("Player " + player_name + " not found.");
 							}
 
-							player.getInventory().addItem(plugin.getItem(pack_name, item_name));
+							player.getInventory().addItem(plugin.getCustomItemStack(pack_name, item_name));
 
 							return Command.SINGLE_SUCCESS;
 						})

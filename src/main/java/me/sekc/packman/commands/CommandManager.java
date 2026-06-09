@@ -7,6 +7,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import me.sekc.packman.Packman;
 import me.sekc.packman.commands.packman.GiveCommand;
+import me.sekc.packman.commands.packman.ReloadCommand;
 
 public class CommandManager {
     static public void registerCommands(Packman plugin) {
@@ -14,6 +15,7 @@ public class CommandManager {
 
         LiteralArgumentBuilder<CommandSourceStack> clanRoot = Commands.literal("packman");
 		GiveCommand.register(plugin, clanRoot);
+		ReloadCommand.register(plugin, clanRoot);
         LiteralCommandNode<CommandSourceStack> buildClanRoot = clanRoot.build();
 
         plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {

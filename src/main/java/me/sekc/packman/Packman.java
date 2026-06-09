@@ -2,8 +2,10 @@ package me.sekc.packman;
 
 import me.sekc.packman.commands.CommandManager;
 import me.sekc.packman.parser.PackmanGlyph;
+import me.sekc.packman.parser.PackmanItem;
 import me.sekc.packman.parser.PackmanPackParser;
 import me.sekc.packman.server.ResourcePackServer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -21,7 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class Packman extends JavaPlugin {
-	ResourcePackServer resourcePackServer;
+	public ResourcePackServer resourcePackServer;
+	public PackmanPackParser packmanPackParser;
 	Map<String, File> packmanPacks = new HashMap<>(); // packs that will be merged to form the final pack when "generatePack()" is ran
 
 	public byte[] resourcePackChecksum; // The SHA-1 hash of the latest pack.zip
@@ -31,10 +34,16 @@ public final class Packman extends JavaPlugin {
 		packmanPacks.put(packName, pathToPack);
 	}
 
-	public ItemStack getItem(String pack_name, String item_name) {
-		ItemStack result = ItemStack.of(Material.FEATHER);
+	public ItemStack getCustomItemStack(String pack_name, String item_name) {
+		PackmanItem packmanItem = packmanPackParser.allParsedItems.get(Map.entry(pack_name, item_name));
+
+		ItemStack result = ItemStack.of(packmanItem.baseMaterial);
 		ItemMeta meta = result.getItemMeta();
+
 		meta.setItemModel(new NamespacedKey("packman", pack_name + "_" + item_name));
+		meta.itemName(packmanItem.displayName);
+		meta.lore(packmanItem.lore);
+
 		result.setItemMeta(meta);
 		return result;
 	}
@@ -56,6 +65,20 @@ public final class Packman extends JavaPlugin {
 		}, 1L);
 	}
 
+	public void reload() {
+		getLogger().info("Reloading config.");
+		reloadConfig();
+
+		getLogger().info("Regenerating Packman packs.");
+		// Generate the pack to dataPath/pack.zip
+		generatePack();
+
+		getLogger().info("Restarting the HTTP server.");
+		// Restart the HTTPServer
+		resourcePackServer.stopServer();
+		startHttpServer();
+	}
+
 	private void addPacksFromDataFolder() {
 		File packsFolder = new File(getDataFolder() + "/packs");
 
@@ -72,15 +95,15 @@ public final class Packman extends JavaPlugin {
 		getLogger().info("Generating pack...");
 
 		// Parse the packman packs
-		PackmanPackParser parser = new PackmanPackParser(this);
+		packmanPackParser = new PackmanPackParser(this);
 
 		for (Map.Entry<String, File> pack : packmanPacks.entrySet()) {
-			parser.parseResourcePack(pack.getKey(), pack.getValue());
+			packmanPackParser.parseResourcePack(pack.getKey(), pack.getValue());
 		}
 
 		// Generate the Minecraft resource pack to pack.zip
 		File tempFolder = new File(getDataFolder() + "/temp_pack");
-		parser.generateMinecraftResourcePack(
+		packmanPackParser.generateMinecraftResourcePack(
 			tempFolder,
 			new File(getDataFolder() + "/pack.zip")
 		);

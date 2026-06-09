@@ -6,3 +6,8 @@ api-version: '26.1.2'
 load: POSTWORLD
 
 authors: [ sekc ]
+
+permissions:
+  packman.give:
+    description: Allows admins give themselves custom items.
+    default: op
