@@ -1,0 +1,17 @@
+resource-pack-server:
+  server-ip: "localhost" # "clans.bounceme.net" # The public-facing IP or domain name of this server
+  port: 5335
+
+resource-pack:
+  # The next 3 fields will be used to create the pack.mcmeta file in the root of the
+  # resource pack.
+  description: "A resource pack generated with PackMan."
+  min-format: 84
+  max-format: 84
+
+  glyphs:
+    # The character range you wish to override for your glyphs,
+    # by default this is the Private Use Area:
+    #   https://jrgraphix.net/r/Unicode/E000-F8FF
+    range-min: 57344 # In hex this is 0xE000
+    range-max: 63743 # In hex this is 0xF8FF

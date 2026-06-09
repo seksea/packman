@@ -1,0 +1,8 @@
+name: packman
+version: '${version}'
+
+main: me.sekc.packman.Packman
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ sekc ]
