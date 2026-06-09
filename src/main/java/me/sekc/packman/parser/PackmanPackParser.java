@@ -1,6 +1,7 @@
 package me.sekc.packman.parser;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.sekc.packman.Packman;
@@ -24,8 +25,14 @@ public class PackmanPackParser {
 	// The key is {PACKNAME, GLYPHNAME}
 	Map<Map.Entry<String, String>, PackmanGlyph> allParsedGlyphs = new HashMap<>(); // Glyphs from all parsed resource packs
 
+	// The key is {PACKNAME, ITEMNAME}
+	Map<Map.Entry<String, String>, PackmanItem> allParsedItems = new HashMap<>(); // Items from all parsed resource packs
+
 	// The key is {PACKNAME, GLYPHNAME}
 	public Map<Map.Entry<String, String>, Character> glyphToCharMap = new HashMap<>(); // Which glyph = which char? this is reset when generating glyphs
+
+	// The key is {PACKNAME, ITEMNAME}
+	public Map<Map.Entry<String, String>, Integer> itemToCustomModelDataMap = new HashMap<>(); // Which item = which CustomModelData number? this is reset when generating items
 
 	public PackmanPackParser(Packman plugin) {
 		this.plugin = plugin;
@@ -39,6 +46,7 @@ public class PackmanPackParser {
 			return; // no packman.yml, don't parse this pack!
 		}
 		parseGlyphsYml(packName, pathToPack);
+		parseItemsYml(packName, pathToPack);
 	}
 
 	private boolean parsePackmanYml(String packName, File pathToPack) {
@@ -77,6 +85,25 @@ public class PackmanPackParser {
 		}
 	}
 
+	private void parseItemsYml(String packName, File pathToPack) {
+		File itemsYmlFile = new File(pathToPack + "/items/items.yml");
+		if (itemsYmlFile.exists()) {
+			plugin.getLogger().info("Parsing " + itemsYmlFile);
+			YamlConfiguration itemYml =  YamlConfiguration.loadConfiguration(itemsYmlFile);
+
+			List<?> itemConfigs = itemYml.getList("items");
+			for (Object itemConfigObj : itemConfigs) {
+				if ((itemConfigObj instanceof HashMap<?,?>)) {
+					HashMap<String,?> glyphConfig = (HashMap<String,?>)itemConfigObj;
+
+					String glyphName = (String)glyphConfig.get("name");
+					plugin.getLogger().info("Parsing item " + glyphName);
+					this.allParsedItems.put(Map.entry(packName, glyphName), new PackmanItem(glyphConfig, itemsYmlFile));
+				}
+			}
+		}
+	}
+
 	public void generateMinecraftResourcePack(File tempFolder, File outputZip) {
 		// delete old temp_pack
 		try {
@@ -93,6 +120,7 @@ public class PackmanPackParser {
 
 		generatePackMcmeta(tempFolder);
 		generateGlyphs(tempFolder);
+		generateItems(tempFolder);
 
 		// zip it up!
 		if (!outputZip.delete()) { // delete old zip
@@ -186,6 +214,75 @@ public class PackmanPackParser {
 			writer.write(fontDefaultJson.toString());
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to create file: " + fontDefaultJsonFile);
+		}
+	}
+
+	private void generateItems(File pathToGenerateAt) {
+		this.itemToCustomModelDataMap.clear(); // clear the custom model data map as we will repopulate it
+
+		if (this.allParsedItems.isEmpty())
+			return;
+
+		plugin.getLogger().info("Generating Items");
+
+		File itemsFolder = new File(pathToGenerateAt + "/assets/packman/items");
+		if (!itemsFolder.mkdirs()) {
+			throw new RuntimeException("Failed to create folder: " + itemsFolder);
+		}
+
+		File customModelsFolder = new File(pathToGenerateAt + "/assets/packman/models/item");
+		if (!customModelsFolder.mkdirs()) {
+			throw new RuntimeException("Failed to create folder: " + customModelsFolder);
+		}
+
+		File itemTexturesFolder = new File(pathToGenerateAt + "/assets/packman/textures/item");
+		if (!itemTexturesFolder.mkdirs()) {
+			throw new RuntimeException("Failed to create folder: " + itemTexturesFolder);
+		}
+
+		for (Map.Entry<Map.Entry<String, String>, PackmanItem> item : this.allParsedItems.entrySet()) {
+			String packName = item.getKey().getKey();
+			String itemName = item.getKey().getValue();
+
+			File itemDeclarationFile = new File(itemsFolder + "/"  + packName + "_" + itemName + ".json");
+
+			// Generate the items declaration
+			JsonObject itemDeclarationJson = new JsonObject();
+			JsonObject itemDeclarationModelJson = new JsonObject();
+			itemDeclarationModelJson.add("type", new JsonPrimitive("minecraft:model"));
+			itemDeclarationModelJson.add("model", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+			itemDeclarationJson.add("model", itemDeclarationModelJson);
+
+			// Write to file
+			try (FileWriter writer = new FileWriter(itemDeclarationFile)) {
+				writer.write(itemDeclarationJson.toString());
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to create file: " + itemDeclarationFile);
+			}
+
+
+			File customModelFile = new File(customModelsFolder + "/"  + packName + "_" + itemName + ".json");
+
+			// Generate the items custom model
+			JsonObject customModelJson = new JsonObject();
+			customModelJson.add("parent", new JsonPrimitive("minecraft:item/generated"));
+			JsonObject texturesJson = new JsonObject();
+			texturesJson.add("layer0", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+			customModelJson.add("textures", texturesJson);
+
+			// Write to file
+			try (FileWriter writer = new FileWriter(customModelFile)) {
+				writer.write(customModelJson.toString());
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to create file: " + customModelJson);
+			}
+
+			// copy texture to pack
+			try {
+				FileUtils.copyFile(item.getValue().imagePath, new File(itemTexturesFolder + "/"  + packName + "_" + itemName + ".png"));
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to copy texture to pack: " + item.getValue().imagePath + " -> " + new File(itemTexturesFolder + "/" + packName + "_" + itemName + ".png") + ": " + e);
+			}
 		}
 	}
 
