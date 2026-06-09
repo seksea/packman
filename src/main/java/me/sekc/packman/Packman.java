@@ -1,9 +1,14 @@
 package me.sekc.packman;
 
+import me.sekc.packman.commands.CommandManager;
 import me.sekc.packman.parser.PackmanGlyph;
 import me.sekc.packman.parser.PackmanPackParser;
 import me.sekc.packman.server.ResourcePackServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -26,11 +31,21 @@ public final class Packman extends JavaPlugin {
 		packmanPacks.put(packName, pathToPack);
 	}
 
+	public ItemStack getItem(String pack_name, String item_name) {
+		ItemStack result = ItemStack.of(Material.FEATHER);
+		ItemMeta meta = result.getItemMeta();
+		meta.setItemModel(new NamespacedKey("packman", pack_name + "_" + item_name));
+		result.setItemMeta(meta);
+		return result;
+	}
+
 	@Override
 	public void onEnable() {
 		addPacksFromDataFolder();
 
 		getServer().getPluginManager().registerEvents(new EventListener(this), this);
+
+		CommandManager.registerCommands(this);
 
 		// Run after 1 tick to ensure all plugins have enabled and thus added their packs
 		Bukkit.getScheduler().runTaskLater(this, () -> {
