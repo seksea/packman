@@ -1,15 +1,19 @@
 plugins {
     id("java-library")
     id("xyz.jpenilla.run-paper") version "3.0.2"
+    id("com.gradleup.shadow") version "9.3.1"
 }
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.codemc.io/repository/maven-releases/")
+    maven("https://repo.codemc.io/repository/maven-snapshots/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    implementation("com.github.retrooper:packetevents-spigot:2.12.2")
 }
 
 java {
@@ -17,6 +21,11 @@ java {
 }
 
 tasks {
+    shadowJar { // bundle packetEvents
+        relocate("com.github.retrooper", "me.sekc.packman.libs.packetevents")
+        relocate("io.github.retrooper", "me.sekc.packman.libs.packetevents")
+    }
+
     runServer {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.

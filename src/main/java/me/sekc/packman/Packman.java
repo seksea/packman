@@ -1,11 +1,19 @@
 package me.sekc.packman;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.sekc.packman.commands.CommandManager;
 import me.sekc.packman.parser.PackmanGlyph;
 import me.sekc.packman.parser.PackmanItem;
 import me.sekc.packman.parser.PackmanPackParser;
 import me.sekc.packman.server.ResourcePackServer;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -29,6 +37,8 @@ public final class Packman extends JavaPlugin {
 
 	public byte[] resourcePackChecksum; // The SHA-1 hash of the latest pack.zip
 
+	CustomPlaceholders placeholders;
+
 	public void setPack(String packName, File pathToPack) { // sets the pack, so if already exists then it'll update
 		getLogger().info("Set pack " + packName + " = " + pathToPack);
 		packmanPacks.put(packName, pathToPack);
@@ -49,7 +59,25 @@ public final class Packman extends JavaPlugin {
 	}
 
 	@Override
+	public void onLoad() {
+		// Building, loading, and initializing the library is necessary when bundling.
+		PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+		PacketEvents.getAPI().load();
+
+		EventManager events = PacketEvents.getAPI().getEventManager();
+		events.registerListener(new PacketEventsListener(this), PacketListenerPriority.MONITOR);
+	}
+
+	@Override
 	public void onEnable() {
+		PacketEvents.getAPI().init();
+
+		placeholders = new CustomPlaceholders(this);
+
+		if (!(new File(getDataFolder() + "/config.yml").exists())) {
+			saveResource("config.yml", false);
+		}
+
 		addPacksFromDataFolder();
 
 		getServer().getPluginManager().registerEvents(new EventListener(this), this);
@@ -63,6 +91,11 @@ public final class Packman extends JavaPlugin {
 
 			startHttpServer();
 		}, 1L);
+	}
+
+	@Override
+	public void onDisable() {
+		PacketEvents.getAPI().terminate();
 	}
 
 	public void reload() {

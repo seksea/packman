@@ -81,7 +81,7 @@ public class PackmanPackParser {
 		PackmanItem.generateItems(plugin, this, tempFolder);
 
 		// zip it up!
-		if (!outputZip.delete()) { // delete old zip
+		if (outputZip.exists() && !outputZip.delete()) { // delete old zip
 			throw new RuntimeException("Failed to delete old " + outputZip);
 		}
 

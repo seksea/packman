@@ -7,6 +7,14 @@ load: POSTWORLD
 
 authors: [ sekc ]
 
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
+
 permissions:
   packman.give:
     description: Allows admins give themselves custom items.

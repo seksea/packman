@@ -10,7 +10,9 @@ resource-pack:
   max-format: 84
 
   glyphs:
-    # The character range you wish to override for your glyphs,
+    # The character range you wish to override for your glyphs, change
+    # this if you are using other custom item plugins, as there will be
+    # conflict if they use the same areas.
     # by default this is the Private Use Area:
     #   https://jrgraphix.net/r/Unicode/E000-F8FF
     range-min: 57344 # In hex this is 0xE000
