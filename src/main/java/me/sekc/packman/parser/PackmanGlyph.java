@@ -44,7 +44,28 @@ public class PackmanGlyph {
 		}
 	}
 
+	//					// new curGlyph, glyphProviderObj
+	static private Map.Entry<Character, JsonObject> generateSpaceProviderGlyphs(PackmanPackParser parser, char curGlyph) {
+		JsonObject glyphObject = new JsonObject();
+		glyphObject.add("type", new JsonPrimitive("space"));
+		JsonObject advancesArray = new JsonObject();
 
+		for (int i = 0; i <= 4; i++) {
+			int shift = Math.powExact(2, i);
+			advancesArray.add("" + (char)curGlyph, new JsonPrimitive(shift));
+			parser.spaceProviderGlyphs.put(shift, curGlyph);
+			curGlyph++;
+
+			shift = -Math.powExact(2, i);
+			advancesArray.add("" + (char)curGlyph, new JsonPrimitive(shift));
+			parser.spaceProviderGlyphs.put(shift, curGlyph);
+			curGlyph++;
+		}
+
+		glyphObject.add("advances", advancesArray);
+
+		return Map.entry(curGlyph, glyphObject);
+	}
 
 	static public void generateGlyphs(Packman plugin, PackmanPackParser parser, File pathToGenerateAt) {
 		parser.glyphToCharMap.clear(); // clear the glyph map as we will repopulate it
@@ -68,7 +89,15 @@ public class PackmanGlyph {
 		JsonObject fontDefaultJson = new JsonObject();
 		JsonArray fontDefaultJsonProvidersList = new JsonArray();
 
+		// Add space providers
 		char curGlyph = (char)plugin.getConfig().getInt("resource-pack.glyphs.range-min");
+
+		Map.Entry<Character, JsonObject> spaceProviderJson = generateSpaceProviderGlyphs(parser, curGlyph);
+		curGlyph = spaceProviderJson.getKey();
+
+		fontDefaultJsonProvidersList.add(spaceProviderJson.getValue());
+
+		// Add glyphs
 		for (Map.Entry<Map.Entry<String, String>, PackmanGlyph> glyph : parser.allParsedGlyphs.entrySet()) {
 			String packName = glyph.getKey().getKey();
 			String glyphName = glyph.getKey().getValue();

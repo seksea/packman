@@ -21,6 +21,9 @@ public class PackmanPackParser {
 	// The key is {PACKNAME, GLYPHNAME}
 	public Map<Map.Entry<String, String>, PackmanGlyph> allParsedGlyphs = new HashMap<>(); // Glyphs from all parsed resource packs
 
+	//
+	public Map<Integer, Character> spaceProviderGlyphs = new HashMap<>(); // Space provider glyphs (-16, -8, -4, -2, -1, 1, 2, 4, 8, 16)
+
 	// The key is {PACKNAME, ITEMNAME}
 	public Map<Map.Entry<String, String>, PackmanItem> allParsedItems = new HashMap<>(); // Items from all parsed resource packs
 
