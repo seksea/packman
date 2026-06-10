@@ -50,7 +50,7 @@ public class PackmanGlyph {
 		glyphObject.add("type", new JsonPrimitive("space"));
 		JsonObject advancesArray = new JsonObject();
 
-		for (int i = 0; i <= 4; i++) {
+		for (int i = 0; i <= 6; i++) { // 0, 1, 2, 4, 8, ..., 64
 			int shift = Math.powExact(2, i);
 			advancesArray.add("" + (char)curGlyph, new JsonPrimitive(shift));
 			parser.spaceProviderGlyphs.put(shift, curGlyph);

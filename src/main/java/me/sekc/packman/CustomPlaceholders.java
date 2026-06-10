@@ -24,7 +24,7 @@ public class CustomPlaceholders {
 			if (endIndex == -1) break;
 
 			String thisTagArgString = resultString.substring(startIndex + tagStart.length(), endIndex);
-			plugin.getLogger().info(resultString + ": " + startIndex + " -> " + endIndex + " " + thisTagArgString);
+			// plugin.getLogger().info(resultString + ": " + startIndex + " -> " + endIndex + " " + thisTagArgString);
 
 			String[] thisTagArgs = thisTagArgString.split(":");
 			if (thisTagArgs.length != 1) {
@@ -63,7 +63,7 @@ public class CustomPlaceholders {
 			if (endIndex == -1) break;
 
 			String thisTagArgString = resultString.substring(startIndex + tagStart.length(), endIndex);
-			plugin.getLogger().info(resultString + ": " + startIndex + " -> " + endIndex + " " + thisTagArgString);
+			// plugin.getLogger().info(resultString + ": " + startIndex + " -> " + endIndex + " " + thisTagArgString);
 
 			String[] thisTagArgs = thisTagArgString.split(":");
 			if (thisTagArgs.length != 2) {
