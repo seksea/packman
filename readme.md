@@ -105,6 +105,7 @@ items:
     texture: "example_item.png"
 ```
 <div style="text-align: center;"><img src="docs/item_example.png" width="60%"></div>
+
 4. Add your pack to the server as detailed in [Creating a Pack](#creating-a-pack).
 5. Give yourself a custom item using the in-game command: `/packman give <player_name> <pack_name> <item_name>`, it will allow you to tab complete all arguments, so you won't need to remember every pack name and item name you have installed.
 
