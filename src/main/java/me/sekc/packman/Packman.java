@@ -68,6 +68,8 @@ public final class Packman extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		Metrics metrics = new Metrics(this, 32013);
+
 		PacketEvents.getAPI().init();
 
 		customPlaceholders = new CustomPlaceholders(this);
