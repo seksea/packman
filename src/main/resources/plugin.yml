@@ -19,3 +19,6 @@ permissions:
   packman.give:
     description: Allows admins give themselves custom items.
     default: op
+  packman.reload:
+    description: Allows admins to re-generate the resource pack and reload configs.
+    default: op

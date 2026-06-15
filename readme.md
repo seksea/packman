@@ -12,9 +12,10 @@ It allows plugin developers to write plugins that can add their own textures, it
  - Custom items (texture, name, lore, etc) (see [example_pack/items](example_pack/items) and [Custom Items](#custom-items))
 
 
- - Plugins can register their own ResourcePack in `onEnable()`
+ - `/packman reload` command that re-generates the resource pack and re-sends it to every player on the server.
+ - Plugins can register their own packman packs in `onEnable()`.
  - Generates a Minecraft resource pack that is all of your packman packs combined.
- - Very simple yml resource pack format (see [example_pack](example_pack) for an example of how to add & customise custom items)
+ - Very simple yml pack format. (see [example_pack](example_pack) for an example of how to add & customise custom items)
  - Hosts the resource pack on a HTTPServer in another thread, so it doesn't need to upload to elsewhere on the internet.
  - Tells players' client to download the resource pack on join.
 
