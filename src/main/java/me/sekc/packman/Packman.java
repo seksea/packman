@@ -10,8 +10,11 @@ import me.sekc.packman.parser.PackmanPackParser;
 import me.sekc.packman.placeholders.CustomPlaceholders;
 import me.sekc.packman.placeholders.PlaceholderAPIPlaceholders;
 import me.sekc.packman.server.ResourcePackServer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,21 +24,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class Packman extends JavaPlugin {
 	public ResourcePackServer resourcePackServer;
 	public PackmanPackParser packmanPackParser;
-	Map<String, File> packmanPacks = new HashMap<>(); // packs that will be merged to form the final pack when "generatePack()" is ran
+	public Map<String, File> packmanPacks = new HashMap<>(); // Packs that will be merged to form the final pack when "generatePack()" is ran
 
 	public byte[] resourcePackChecksum; // The SHA-1 hash of the latest pack.zip
+	public UUID resourcePackUUID; // UUID of the current pack, we need to use this for removing the resource pack.
 
 	CustomPlaceholders customPlaceholders;
 	PlaceholderAPIPlaceholders papiPlaceholders;
 
-	public void setPack(String packName, File pathToPack) { // sets the pack, so if already exists then it'll update
+	public void setPack(String packName, File pathToPack) { // Sets the pack, so if already exists then it'll update, you can call this from your own plugin to add packs from your plugins' folder
 		getLogger().info("Set pack " + packName + " = " + pathToPack);
 		packmanPacks.put(packName, pathToPack);
 	}
@@ -103,6 +105,13 @@ public final class Packman extends JavaPlugin {
 	}
 
 	public void reload() {
+		getLogger().info("Removing old pack from all players");
+		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+
+		for (Player player : players) {
+			player.removeResourcePack(resourcePackUUID);
+		}
+
 		getLogger().info("Reloading config.");
 		reloadConfig();
 
@@ -114,6 +123,16 @@ public final class Packman extends JavaPlugin {
 		// Restart the HTTPServer
 		resourcePackServer.stopServer();
 		startHttpServer();
+
+		for (Player player : players) {
+			player.setResourcePack( // Tell the players' client to download the pack from our HTTP server
+				resourcePackUUID,
+				"http://" + getConfig().getString("resource-pack-server.server-ip") + ":" + getConfig().getInt("resource-pack-server.port"),
+				resourcePackChecksum,
+				"test",
+				true
+			);
+		}
 	}
 
 	private void addPacksFromDataFolder() {
@@ -165,6 +184,9 @@ public final class Packman extends JavaPlugin {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
+		this.resourcePackUUID = UUID.randomUUID();
+		getLogger().info("The UUID of this pack is: " + this.resourcePackUUID.toString());
 	}
 
 	private void startHttpServer() {
@@ -174,5 +196,23 @@ public final class Packman extends JavaPlugin {
 			throw new RuntimeException(e);
 		}
 		resourcePackServer.startServer();
+	}
+
+	public Component getMessage(String name, List<Map.Entry<String, String>> placeholders) {
+		String result = getConfig().getString("messages."+name);
+
+		if (result == null) result = "MISSING message " + name + " IN config.yml";
+
+		if (placeholders != null) {
+			for (Map.Entry<String, String> placeholder: placeholders) {
+				result = result.replace(placeholder.getKey(), placeholder.getValue());
+			}
+		}
+
+		return MiniMessage.miniMessage().deserialize(result);
+	}
+
+	public Component getMessage(String name) {
+		return getMessage(name, null);
 	}
 }

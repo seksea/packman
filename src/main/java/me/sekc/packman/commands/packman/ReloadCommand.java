@@ -14,11 +14,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.Map;
+
 public class ReloadCommand extends BaseCommand {
     static public void register(Packman plugin, LiteralArgumentBuilder<CommandSourceStack> root) {
         root.then(Commands.literal("reload")
 			.executes(ctx -> {
 				plugin.reload();
+				ctx.getSource().getSender().sendMessage(plugin.getMessage("reloaded", List.of(
+					Map.entry("%num_packs%", String.valueOf(plugin.packmanPacks.size()))
+				)));
 				return Command.SINGLE_SUCCESS;
 			})
 		)

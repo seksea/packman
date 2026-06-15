@@ -21,3 +21,7 @@ resource-pack:
     #   https://jrgraphix.net/r/Unicode/E000-F8FF
     range-min: 57344 # In hex this is 0xE000
     range-max: 63743 # In hex this is 0xF8FF
+
+messages:
+  gave-item: "<grey>[</grey><blue>packman</blue><grey>]</grey> <grey>Gave <white>%amount%</white>x <white>%pack_name%:%item_name%</white> to <yellow>%player_name%</yellow></grey>"
+  reloaded: "<grey>[</grey><blue>packman</blue><grey>]</grey> <grey>Reloaded all packs (%num_packs% packs), restarted the HTTP server, and sent the updated pack to all online players.</grey>"
