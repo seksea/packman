@@ -78,13 +78,12 @@ aa [pmglyph:example_pack:example_glyph_small]asd fgd[pmglyph:example_pack:exampl
 <img src="docs/glyph_example1.png" width="48%">
 <img src="docs/glyph_example2.png" width="48%">
 
-  - You can also use your glyph anywhere you can use placeholderAPI if you have it installed.
+  - You can also use your glyph anywhere you can use placeholderAPI if you have it installed using `%pm_glyph:<YOUR_PACK_NAME>:<YOUR_GLYPH_NAME>%` and `%pm_shift:<SHIFT_AMOUNT>%`.
 
 ```
 %pm_glyph:clans_pack:clans_logo%
 ```
 <div style="text-align: center;"><img src="docs/glyph_example3.png" width="60%"></div>
-
 
 ### Custom Items
 
