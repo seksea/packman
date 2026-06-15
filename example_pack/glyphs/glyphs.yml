@@ -1,0 +1,9 @@
+glyphs:
+  - name: "example_glyph"
+    texture: "example_glyph.png"
+    height: 100 # scale
+    ascent: 98 # vertical offset
+  - name: "example_glyph_small"
+    texture: "example_glyph.png"
+    height: 10 # scale
+    ascent: 2 # vertical offset

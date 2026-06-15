@@ -1,4 +1,6 @@
-package me.sekc.packman;
+package me.sekc.packman.placeholders;
+
+import me.sekc.packman.Packman;
 
 import java.util.Map;
 
@@ -15,8 +17,8 @@ public class CustomPlaceholders {
 		int curIndex = 0;
 
 		while (true) {
-			String tagStart = "[[pmshift:";
-			String tagEnd = "]]";
+			String tagStart = "[pmshift:";
+			String tagEnd = "]";
 			int startIndex = resultString.indexOf(tagStart, curIndex);
 			if (startIndex == -1) break;
 
@@ -28,7 +30,7 @@ public class CustomPlaceholders {
 
 			String[] thisTagArgs = thisTagArgString.split(":");
 			if (thisTagArgs.length != 1) {
-				throw new RuntimeException("Malformed tag, [[pmshift: takes 1 arguments: " + tagStart + thisTagArgString + tagEnd);
+				throw new RuntimeException("Malformed tag, [pmshift: takes 1 arguments: " + tagStart + thisTagArgString + tagEnd);
 			}
 
 			int shift = 0;
@@ -54,8 +56,8 @@ public class CustomPlaceholders {
 		int curIndex = 0;
 
 		while (true) {
-			String tagStart = "[[pmglyph:";
-			String tagEnd = "]]";
+			String tagStart = "[pmglyph:";
+			String tagEnd = "]";
 			int startIndex = resultString.indexOf(tagStart, curIndex);
 			if (startIndex == -1) break;
 
@@ -67,7 +69,7 @@ public class CustomPlaceholders {
 
 			String[] thisTagArgs = thisTagArgString.split(":");
 			if (thisTagArgs.length != 2) {
-				throw new RuntimeException("Malformed tag, [[pmglyph: takes 2 arguments: " + tagStart + thisTagArgString + tagEnd);
+				throw new RuntimeException("Malformed tag, [pmglyph: takes 2 arguments: " + tagStart + thisTagArgString + tagEnd);
 			}
 
 			Character glyphChar = plugin.packmanPackParser.glyphToCharMap.get(Map.entry(thisTagArgs[0], thisTagArgs[1]));

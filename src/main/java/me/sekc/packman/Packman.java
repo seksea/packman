@@ -5,17 +5,12 @@ import com.github.retrooper.packetevents.event.EventManager;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.sekc.packman.commands.CommandManager;
-import me.sekc.packman.parser.PackmanGlyph;
 import me.sekc.packman.parser.PackmanItem;
 import me.sekc.packman.parser.PackmanPackParser;
+import me.sekc.packman.placeholders.CustomPlaceholders;
+import me.sekc.packman.placeholders.PlaceholderAPIPlaceholders;
 import me.sekc.packman.server.ResourcePackServer;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -37,7 +32,8 @@ public final class Packman extends JavaPlugin {
 
 	public byte[] resourcePackChecksum; // The SHA-1 hash of the latest pack.zip
 
-	CustomPlaceholders placeholders;
+	CustomPlaceholders customPlaceholders;
+	PlaceholderAPIPlaceholders papiPlaceholders;
 
 	public void setPack(String packName, File pathToPack) { // sets the pack, so if already exists then it'll update
 		getLogger().info("Set pack " + packName + " = " + pathToPack);
@@ -72,7 +68,15 @@ public final class Packman extends JavaPlugin {
 	public void onEnable() {
 		PacketEvents.getAPI().init();
 
-		placeholders = new CustomPlaceholders(this);
+		customPlaceholders = new CustomPlaceholders(this);
+
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+			getLogger().warning("Could not find PlaceholderAPI, it will not be used.");
+		} else {
+			getLogger().info("Creating PlaceholderAPI expansion...");
+			papiPlaceholders = new PlaceholderAPIPlaceholders(this);
+			papiPlaceholders.register();
+		}
 
 		if (!(new File(getDataFolder() + "/config.yml").exists())) {
 			saveResource("config.yml", false);

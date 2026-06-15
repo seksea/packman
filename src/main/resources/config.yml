@@ -1,6 +1,10 @@
 resource-pack-server:
-  server-ip: "localhost" # "clans.bounceme.net" # The public-facing IP or domain name of this server
-  port: 5335
+  # When your server is running, you can test that the pack is accessible by not being on the same network and
+  # visit your servers IP and this port (e.g. clans.bounceme.net:5335) on your browser and if it is working it
+  # will download the pack as it is just a HTTP server.
+
+  server-ip: "localhost" # "clans.bounceme.net" # The public-facing IP or domain name of this server, if debugging then you can use "localhost"
+  port: 5335 # This port must be opened & allowed through any firewall, this is the port that players will download the resource pack from.
 
 resource-pack:
   # The next 3 fields will be used to create the pack.mcmeta file in the root of the
@@ -11,7 +15,7 @@ resource-pack:
 
   glyphs:
     # The character range you wish to override for your glyphs, change
-    # this if you are using other custom item plugins, as there will be
+    # this if you are using other custom glyph plugins, as there will be
     # conflict if they use the same areas.
     # by default this is the Private Use Area:
     #   https://jrgraphix.net/r/Unicode/E000-F8FF

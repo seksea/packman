@@ -1,0 +1,4 @@
+name: "example_pack"
+description: |
+  Example pack for Packman
+version: "0.1"

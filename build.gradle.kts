@@ -7,12 +7,14 @@ plugins {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.helpch.at/releases")
     maven("https://repo.codemc.io/repository/maven-releases/")
     maven("https://repo.codemc.io/repository/maven-snapshots/")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
+    compileOnly("me.clip:placeholderapi:2.12.2")
     implementation("com.github.retrooper:packetevents-spigot:2.12.2")
 }
 

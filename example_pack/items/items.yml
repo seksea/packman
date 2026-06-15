@@ -1,0 +1,8 @@
+items:
+  - name: "example_item"
+    display_name: "<rainbow>Example Item</rainbow>"
+    lore: |
+      This item is an example custom item
+      for the PackMan plugin.
+    base_material: "FEATHER" # The material beneath the custom item
+    texture: "example_item.png"
