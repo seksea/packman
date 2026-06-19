@@ -12,6 +12,8 @@ It allows plugin developers to write plugins that can add their own textures, it
  - Custom items (texture, name, lore, etc) (see [example_pack/items](example_pack/items) and [Custom Items](#custom-items))
 
 
+- `/packman glyph list [<page>]` to list and preview all glyphs.
+ - `/packman give <player> <pack> <item> [<amount>]` (with autocomplete) to give a custom item to a player.
  - `/packman reload` command that re-generates the resource pack and re-sends it to every player on the server.
  - Plugins can register their own packman packs in `onEnable()`.
  - Generates a Minecraft resource pack that is all of your packman packs combined.
