@@ -1,7 +1,7 @@
 # packman
 
 
-Packman (resource PACK MANager) is a plugin (and library) that manages the servers' custom resource pack and custom items.
+Packman (resource PACK MANager) is a plugin (and library) that manages a custom resource pack and custom items.
 
 It allows server owners to add simple items, glyphs, etc to the game.
 
