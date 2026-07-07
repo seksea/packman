@@ -42,22 +42,9 @@ public class CustomPlaceholders {
 				throw new RuntimeException("Shift needs to be a number: " + tagStart + thisTagArgString + tagEnd);
 			}
 
-			List<Integer> possibleShiftList = List.of(64, 32, 16, 8, 4, 2, 1); // must be sorted biggest -> smallest
-			boolean positive = shift > 0;
-			int remaining = Math.abs(shift);
-			String glyphString = "";
-			while (remaining > 0) {
-				for (int possibleShift: possibleShiftList) {
-					if (possibleShift <= remaining) {
-						remaining -= possibleShift;
-						Character glyphChar = plugin.packmanPackParser.spaceProviderGlyphs.get(positive ? possibleShift : -possibleShift);
-						glyphString += glyphChar;
-					}
-				}
-			}
+			String shiftString = Packman.getShiftGlyphString(shift);
 
-
-			resultString = resultString.substring(0, startIndex) + glyphString + resultString.substring(endIndex + tagEnd.length());
+			resultString = resultString.substring(0, startIndex) + shiftString + resultString.substring(endIndex + tagEnd.length());
 		}
 
 		return resultString;

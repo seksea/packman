@@ -113,6 +113,76 @@ items:
 
 ## How To (Plugin Dev)
 
-### Telling PackMan About Your Pack
+### Including the repo
 
-TODO: need to upload to Modrinth so we can use their maven repo.
+Add the repo via gradle like so:
+
+```kt
+repositories {
+    maven("https://api.modrinth.com/maven")
+}
+
+dependencies {
+    compileOnly("maven.modrinth:packman:0.1")
+}
+```
+
+### Using Packman as a library
+
+You must declare your pack in your plugins `onEnable()` func. Here is how you would add your own pack from your plugin's resources
+
+```java
+public void onEnable() {
+	if (Bukkit.getPluginManager().getPlugin("Packman") == null) {
+		getLogger.warning("Could not find Packman plugin, it will not be used."); // Error here if packman is not optional
+	} else {
+		saveResource("pack_name.zip"); // Take the pack zip out of resources
+		Packman.setPack("pack_name", new File(getDataFolder(), "pack_name.zip")); // Tell packman about your pack
+	}
+}
+```
+
+It's as easy as that!
+
+Now you can use different `Packman.` functions from inside your plugin to get glyphs, custom items (as ItemStack), and much more!
+
+Here are some functions packman provides:
+
+```java
+/**
+ * Sets the pack, so if already exists then it'll update, you can call this from your own plugin to add packs from your plugins' folder (preferably in `onEnable`)
+ * @param packName The name of the new pack that you will add.
+ * @param pathToPack The path to the pack.
+ */
+static public void setPack(String packName, File pathToPack) {}
+
+/**
+ * Gets the character that represents a glyph in a packman pack.
+ * <p>You can then use this character anywhere and the client will render it as the custom glyph,
+ * this is used for custom chest GUIs, emojis, etc</p>
+ *
+ * @param packName The name of the pack you want to get a glyph from
+ * @param glyphName The name of the glyph you want to get
+ * @return The resulting glyph, will be null if no pack/glyph match is found!
+ */
+static public Character getGlyphFromPack(String packName, String glyphName) {}
+
+/**
+ * Generates a sequence of glyphs that will cause whatever text follows it to be shifted right/left by a specified amount
+ * <p>This is helpful for aligning chest GUIs</p>
+ *
+ * @param shift How much should this string shift the text? positive = right, negative = left
+ * @return The string of glyphs that will cause text to be shifted.
+ */
+static public String getShiftGlyphString(int shift) {}
+
+/**
+ * Gets a custom item from the pack and returns it as an item stack
+ * <p>This allows you to gift players custom items, or show it in chest GUIs</p>
+ *
+ * @param packName The name of the pack you want to get an item from
+ * @param itemName The name of the item you want to get
+ * @return The custom item as an ItemStack
+ */
+static public ItemStack getCustomItemStack(String packName, String itemName) {}
+```

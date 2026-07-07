@@ -21,7 +21,6 @@ public class PackmanPackParser {
 	// The key is {PACKNAME, GLYPHNAME}
 	public Map<Map.Entry<String, String>, PackmanGlyph> allParsedGlyphs = new HashMap<>(); // Glyphs from all parsed resource packs
 
-	//
 	public Map<Integer, Character> spaceProviderGlyphs = new HashMap<>(); // Space provider glyphs (-16, -8, -4, -2, -1, 1, 2, 4, 8, 16)
 
 	// The key is {PACKNAME, ITEMNAME}
@@ -44,6 +43,7 @@ public class PackmanPackParser {
 		if (!parsePackmanYml(packName, pathToPack)) {
 			return; // no packman.yml, don't parse this pack!
 		}
+		PackmanDialog.parseDialogsYml(plugin, this, packName, pathToPack);
 		PackmanGlyph.parseGlyphsYml(plugin, this, packName, pathToPack);
 		PackmanItem.parseItemsYml(plugin, this, packName, pathToPack);
 	}

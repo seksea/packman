@@ -1,0 +1,6 @@
+name: Packman
+version: '0.3'
+main: me.sekc.packman.Packman
+description: Add custom content to your game!
+api-version: '26.1.2'
+bootstrapper: me.sekc.packman.PackmanBootstrapper
