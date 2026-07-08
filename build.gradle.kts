@@ -15,7 +15,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
     compileOnly("me.clip:placeholderapi:2.12.2")
-    implementation("com.github.retrooper:packetevents-spigot:2.12.2")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.13.0")
 }
 
 java {
@@ -23,11 +23,6 @@ java {
 }
 
 tasks {
-    shadowJar { // bundle packetEvents
-        relocate("com.github.retrooper", "me.sekc.packman.libs.packetevents")
-        relocate("io.github.retrooper", "me.sekc.packman.libs.packetevents")
-    }
-
     runServer {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.

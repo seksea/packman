@@ -5,15 +5,10 @@ main: me.sekc.packman.Packman
 api-version: '26.1.2'
 load: POSTWORLD
 
-authors: [ sekc ]
+depend:
+  - packetevents
 
-softdepend:
-  - ProtocolLib
-  - ProtocolSupport
-  - ViaVersion
-  - ViaBackwards
-  - ViaRewind
-  - Geyser-Spigot
+authors: [ sekc ]
 
 permissions:
   packman.give:
