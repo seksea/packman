@@ -213,7 +213,9 @@ public final class Packman extends JavaPlugin {
 		}
 
 		for (File pack : packsFolder.listFiles()) {
-			Packman.setPack(pack.getName(), pack);
+			if (!pack.getName().equals(".tempZips")) {
+				Packman.setPack(pack.getName(), pack);
+			}
 		}
 	}
 
