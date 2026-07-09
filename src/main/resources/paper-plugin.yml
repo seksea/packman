@@ -1,8 +1,8 @@
 name: Packman
-version: '0.4.1'
+version: '0.4.2'
 main: me.sekc.packman.Packman
 description: Add custom content to your game!
-api-version: '26.1.2'
+api-version: '26.2'
 
 dependencies:
   server:
