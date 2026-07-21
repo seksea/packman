@@ -23,6 +23,11 @@ public class PackmanGlyph {
 		texturePath = new File(pathToConfig.getParentFile() + "/" + config.get("texture"));
 		height = (int)config.get("height");
 		ascent = (int)config.get("ascent");
+
+		if (ascent > height) {
+			Packman.getPlugin(Packman.class).getLogger().warning("Glyph with texture " + texturePath + " has ascent (" + ascent + ") > height(" + height + ")!!! clamping ascent to be equal to height.");
+			ascent = height;
+		}
 	}
 
 	static public void parseGlyphsYml(Packman plugin, PackmanPackParser parser, String packName, File pathToPack) {

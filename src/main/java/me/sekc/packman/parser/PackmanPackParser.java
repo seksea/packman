@@ -26,6 +26,12 @@ public class PackmanPackParser {
 	// The key is {PACKNAME, ITEMNAME}
 	public Map<Map.Entry<String, String>, PackmanItem> allParsedItems = new HashMap<>(); // Items from all parsed resource packs
 
+	// The key is {PACKNAME, ITEMNAME}
+	public Map<Map.Entry<String, String>, PackmanBlock> allParsedBlocks = new HashMap<>(); // Blocks from all parsed resource packs
+
+	// The key is {PACKNAME, BLOCKNAME}, value is {
+	public Map<Map.Entry<String, String>, PackmanBlock.NoteblockID> blockToNoteblockID = new HashMap<>(); // Which block = which noteblock state? the noteblock state used by each item is stored in a json file in the packman folder so that when adding packs, the noteblock states don't get mixed up.
+
 	// The key is {PACKNAME, GLYPHNAME}
 	public Map<Map.Entry<String, String>, Character> glyphToCharMap = new HashMap<>(); // Which glyph = which char? this is reset when generating glyphs
 
@@ -46,6 +52,7 @@ public class PackmanPackParser {
 		PackmanDialog.parseDialogsYml(plugin, this, packName, pathToPack);
 		PackmanGlyph.parseGlyphsYml(plugin, this, packName, pathToPack);
 		PackmanItem.parseItemsYml(plugin, this, packName, pathToPack);
+		PackmanBlock.parseBlocksYml(plugin, this, packName, pathToPack);
 	}
 
 	private boolean parsePackmanYml(String packName, File pathToPack) {
@@ -82,6 +89,7 @@ public class PackmanPackParser {
 		generatePackMcmeta(tempFolder);
 		PackmanGlyph.generateGlyphs(plugin, this, tempFolder);
 		PackmanItem.generateItems(plugin, this, tempFolder);
+		PackmanBlock.generateBlocks(plugin, this, tempFolder);
 
 		// zip it up!
 		if (outputZip.exists() && !outputZip.delete()) { // delete old zip

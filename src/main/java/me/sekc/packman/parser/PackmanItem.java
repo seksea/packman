@@ -19,16 +19,28 @@ import java.util.Map;
 
 public class PackmanItem {
 	public File texturePath;
+	public String customModel = null; // overrides texture
 	public Component displayName;
 	public List<Component> lore = new ArrayList<>();
 	public Material baseMaterial;
+	public Map.Entry<String, String> placesBlock = null; // pack_name:block_name (or null if just an item, not an item for a block)
 
 	PackmanItem(HashMap<String, ?> config, File pathToConfig) { // Hashmap is from yaml `getList`
 		texturePath = new File(pathToConfig.getParentFile() + "/" + config.get("texture"));
 		displayName = MiniMessage.miniMessage().deserialize((String)config.get("display_name"));
 		baseMaterial = Material.getMaterial((String)config.get("base_material"));
+
 		if (baseMaterial == null)
 			throw new RuntimeException("base_material " + baseMaterial + " is invalid.");
+
+		if (config.containsKey("places_block")) {
+			String[] placesBlockSplit = ((String)config.get("places_block")).split(":");
+			placesBlock = Map.entry(placesBlockSplit[0], placesBlockSplit[1]);
+		}
+
+		if (config.containsKey("custom_model")) {
+			customModel = ((String)config.get("custom_model"));
+		}
 
 		String[] loreLines = ((String)config.get("lore")).stripLeading().stripTrailing().split("\\n");
 
@@ -89,7 +101,11 @@ public class PackmanItem {
 			JsonObject itemDeclarationJson = new JsonObject();
 			JsonObject itemDeclarationModelJson = new JsonObject();
 			itemDeclarationModelJson.add("type", new JsonPrimitive("minecraft:model"));
-			itemDeclarationModelJson.add("model", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+			if (item.getValue().customModel == null) {
+				itemDeclarationModelJson.add("model", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+			} else {
+				itemDeclarationModelJson.add("model", new JsonPrimitive(item.getValue().customModel));
+			}
 			itemDeclarationJson.add("model", itemDeclarationModelJson);
 
 			// Write to file
@@ -100,27 +116,29 @@ public class PackmanItem {
 			}
 
 
-			File customModelFile = new File(customModelsFolder + "/"  + packName + "_" + itemName + ".json");
+			if (item.getValue().customModel == null) { // if you specify a different model, then we dont need to make one
+				File customModelFile = new File(customModelsFolder + "/" + packName + "_" + itemName + ".json");
 
-			// Generate the items custom model
-			JsonObject customModelJson = new JsonObject();
-			customModelJson.add("parent", new JsonPrimitive("minecraft:item/generated"));
-			JsonObject texturesJson = new JsonObject();
-			texturesJson.add("layer0", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
-			customModelJson.add("textures", texturesJson);
+				// Generate the items' custom model
+				JsonObject customModelJson = new JsonObject();
+				customModelJson.add("parent", new JsonPrimitive("minecraft:item/generated"));
+				JsonObject texturesJson = new JsonObject();
+				texturesJson.add("layer0", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+				customModelJson.add("textures", texturesJson);
 
-			// Write to file
-			try (FileWriter writer = new FileWriter(customModelFile)) {
-				writer.write(customModelJson.toString());
-			} catch (IOException e) {
-				throw new RuntimeException("Failed to create file: " + customModelJson);
-			}
+				// Write to file
+				try (FileWriter writer = new FileWriter(customModelFile)) {
+					writer.write(customModelJson.toString());
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to create file: " + customModelJson);
+				}
 
-			// copy texture to pack
-			try {
-				FileUtils.copyFile(item.getValue().texturePath, new File(itemTexturesFolder + "/"  + packName + "_" + itemName + ".png"));
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to copy texture to pack: " + item.getValue().texturePath + " -> " + new File(itemTexturesFolder + "/" + packName + "_" + itemName + ".png") + ": " + e);
+				// copy texture to pack
+				try {
+					FileUtils.copyFile(item.getValue().texturePath, new File(itemTexturesFolder + "/"  + packName + "_" + itemName + ".png"));
+				} catch (Exception e) {
+					throw new RuntimeException("Failed to copy texture to pack: " + item.getValue().texturePath + " -> " + new File(itemTexturesFolder + "/" + packName + "_" + itemName + ".png") + ": " + e);
+				}
 			}
 		}
 	}

@@ -28,3 +28,4 @@ messages:
   list-glyph-header: "<grey>[</grey><blue>packman</blue><grey>]</grey> ============== <u><yellow><click:run_command:packman glyph list %page-1%><<</click></yellow></u> page %page% / %max_page% <u><yellow><click:run_command:packman glyph list %page+1%>>></click></yellow></u> =============="
   list-glyph: "<grey>  - <hover:show_text:\"%glyph%\"><u><white>%pack_name%</white>:<white>%item_name%</white></u></hover></grey>"
   list-glyph-no-more: "<grey>  - No more glyphs.</grey>"
+  noteblock-warning: "<grey>Noteblocks are disabled on this server.</grey>"
