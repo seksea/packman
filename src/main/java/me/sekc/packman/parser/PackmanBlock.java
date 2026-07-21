@@ -190,21 +190,21 @@ public class PackmanBlock {
 			blockNoteblockOverrideJson.add("when", blockNoteblockOverrideWhenJson);
 
 			JsonObject blockNoteblockOverrideApplyJson = new JsonObject();
-			blockNoteblockOverrideApplyJson.add("model", new JsonPrimitive("packman:block/" + packName + "_" + blockName));
+			blockNoteblockOverrideApplyJson.add("model", new JsonPrimitive("packman:block/" + packName + "." + blockName));
 			blockNoteblockOverrideJson.add("apply", blockNoteblockOverrideApplyJson);
 
 			noteblockBlockstatesMultipartJson.add(blockNoteblockOverrideJson);
 
-			File blockModelFile = new File(blockModelFolder + "/"  + packName + "_" + blockName + ".json");
+			File blockModelFile = new File(blockModelFolder + "/"  + packName + "." + blockName + ".json");
 
 			// Generate the blocks' custom model
 			JsonObject blockModelJson = new JsonObject();
 			blockModelJson.add("parent", new JsonPrimitive("minecraft:block/cube_all"));
 			JsonObject texturesJson = new JsonObject();
-			texturesJson.add("all", new JsonPrimitive("packman:block/" + packName + "_" + blockName));
+			texturesJson.add("all", new JsonPrimitive("packman:block/" + packName + "." + blockName));
 			blockModelJson.add("textures", texturesJson);
 
-			// Write to filepackName + "_" + blockName
+			// Write to filepackName + "." + blockName
 			try (FileWriter writer = new FileWriter(blockModelFile)) {
 				writer.write(blockModelJson.toString());
 			} catch (IOException e) {
@@ -213,9 +213,9 @@ public class PackmanBlock {
 
 			// copy texture to pack
 			try {
-				FileUtils.copyFile(block.getValue().texturePath, new File(blockTexturesFolder + "/"  + packName + "_" + blockName + ".png"));
+				FileUtils.copyFile(block.getValue().texturePath, new File(blockTexturesFolder + "/"  + packName + "." + blockName + ".png"));
 			} catch (Exception e) {
-				throw new RuntimeException("Failed to copy texture to pack: " + block.getValue().texturePath + " -> " + new File(blockTexturesFolder + "/" + packName + "_" + blockName + ".png") + ": " + e);
+				throw new RuntimeException("Failed to copy texture to pack: " + block.getValue().texturePath + " -> " + new File(blockTexturesFolder + "/" + packName + "." + blockName + ".png") + ": " + e);
 			}
 		}
 

@@ -20,6 +20,7 @@ import org.bukkit.ServerLinks;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -114,12 +115,55 @@ public final class Packman extends JavaPlugin {
 		ItemStack result = ItemStack.of(packmanItem.baseMaterial);
 		ItemMeta meta = result.getItemMeta();
 
-		meta.setItemModel(new NamespacedKey("packman", packName + "_" + itemName));
+		meta.getPersistentDataContainer().set(new NamespacedKey("packman", "custom_item"), PersistentDataType.STRING, packName + "." + itemName);
+		meta.setItemModel(new NamespacedKey("packman", packName + "." + itemName));
 		meta.itemName(packmanItem.displayName);
 		meta.lore(packmanItem.lore);
 
 		result.setItemMeta(meta);
 		return result;
+	}
+
+	public static class PackmanItemData {
+		public String packName;
+		public String itemName;
+		public PackmanItem item;
+
+		PackmanItemData(String packName, String itemName, PackmanItem item) {
+			this.packName = packName;
+			this.itemName = itemName;
+			this.item = item;
+		}
+	}
+
+	/**
+	 * Give this function an ItemStack and if it is a Packman item it will give you the
+	 * packName and itemName of the custom item.
+	 *
+	 * @return null if not a packman item, otherwise it will return a PackmanItemData of the item.
+	 */
+	static public PackmanItemData getCustomItemFromItemStack(ItemStack item) {
+		Packman plugin = Packman.getPlugin(Packman.class);
+
+		ItemMeta meta = item.getItemMeta();
+		String customItemString = meta.getPersistentDataContainer().get(new NamespacedKey("packman", "custom_item"), PersistentDataType.STRING);
+		if (customItemString == null)
+			return null;
+
+		String[] customItemStringSplit = customItemString.split("\\.");
+
+		PackmanItem packmanItem = plugin.packmanPackParser.allParsedItems.get(Map.entry(customItemStringSplit[0], customItemStringSplit[1]));
+
+		if (packmanItem == null) {
+			plugin.getLogger().warning("Failed to get custom item: " + customItemString);
+			return null;
+		}
+
+		return new PackmanItemData(
+			customItemStringSplit[0],
+			customItemStringSplit[1],
+			packmanItem
+		);
 	}
 
 	@Override

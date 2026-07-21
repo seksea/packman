@@ -62,6 +62,9 @@ public class PackmanItem {
 
 					String itemName = (String)itemConfig.get("name");
 					plugin.getLogger().info("Parsing item " + itemName);
+					if (itemName.contains(".") || packName.contains(".")) {
+						throw new RuntimeException("Error parsing item " + itemName + " in pack " + packName + ", you can not use \".\" characters in either pack or item name as packman uses these internally.");
+					}
 					parser.allParsedItems.put(Map.entry(packName, itemName), new PackmanItem(itemConfig, itemsYmlFile));
 				}
 			}
@@ -95,14 +98,14 @@ public class PackmanItem {
 
 			plugin.getLogger().info("Generating item " + packName + " " + itemName);
 
-			File itemDeclarationFile = new File(itemsFolder + "/"  + packName + "_" + itemName + ".json");
+			File itemDeclarationFile = new File(itemsFolder + "/"  + packName + "." + itemName + ".json");
 
 			// Generate the items declaration
 			JsonObject itemDeclarationJson = new JsonObject();
 			JsonObject itemDeclarationModelJson = new JsonObject();
 			itemDeclarationModelJson.add("type", new JsonPrimitive("minecraft:model"));
 			if (item.getValue().customModel == null) {
-				itemDeclarationModelJson.add("model", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+				itemDeclarationModelJson.add("model", new JsonPrimitive("packman:item/" + packName + "." + itemName));
 			} else {
 				itemDeclarationModelJson.add("model", new JsonPrimitive(item.getValue().customModel));
 			}
@@ -117,13 +120,13 @@ public class PackmanItem {
 
 
 			if (item.getValue().customModel == null) { // if you specify a different model, then we dont need to make one
-				File customModelFile = new File(customModelsFolder + "/" + packName + "_" + itemName + ".json");
+				File customModelFile = new File(customModelsFolder + "/" + packName + "." + itemName + ".json");
 
 				// Generate the items' custom model
 				JsonObject customModelJson = new JsonObject();
 				customModelJson.add("parent", new JsonPrimitive("minecraft:item/generated"));
 				JsonObject texturesJson = new JsonObject();
-				texturesJson.add("layer0", new JsonPrimitive("packman:item/" + packName + "_" + itemName));
+				texturesJson.add("layer0", new JsonPrimitive("packman:item/" + packName + "." + itemName));
 				customModelJson.add("textures", texturesJson);
 
 				// Write to file
@@ -135,9 +138,9 @@ public class PackmanItem {
 
 				// copy texture to pack
 				try {
-					FileUtils.copyFile(item.getValue().texturePath, new File(itemTexturesFolder + "/"  + packName + "_" + itemName + ".png"));
+					FileUtils.copyFile(item.getValue().texturePath, new File(itemTexturesFolder + "/"  + packName + "." + itemName + ".png"));
 				} catch (Exception e) {
-					throw new RuntimeException("Failed to copy texture to pack: " + item.getValue().texturePath + " -> " + new File(itemTexturesFolder + "/" + packName + "_" + itemName + ".png") + ": " + e);
+					throw new RuntimeException("Failed to copy texture to pack: " + item.getValue().texturePath + " -> " + new File(itemTexturesFolder + "/" + packName + "." + itemName + ".png") + ": " + e);
 				}
 			}
 		}
